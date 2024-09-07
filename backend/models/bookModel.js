@@ -13,6 +13,10 @@ const bookSchema = new Schema({
     description: {
         type: String,
         required: true
+    },
+    issued: {
+        type: Boolean,
+        default: false
     }
 }, {timestamps: true})
 

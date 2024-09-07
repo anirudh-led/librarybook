@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 //get all books
 const getBooks = async (req, res) => {
-  const books = Book.find({}).sort({ createdAt: -1 });
+  const books = await Book.find({}).sort({ createdAt: -1 });
 
   res.status(200).json(books);
 };
@@ -16,7 +16,7 @@ const getBook = async (req, res) => {
     return res.status(404).json({ error: "No such book" });
   }
 
-  const books = Book.findById(id);
+  const books = await Book.findById(id);
 
   if (!workout) {
     return res.status(404).json({ error: "No such workout" });
@@ -38,50 +38,51 @@ const addBook = async (req, res) => {
 
 //delete a book
 const deleteBook = async (req, res) => {
-    const { id } = req.params
+  const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: "No such book" });
-      }
-    
-    const books = await Book.findOneAndDelete({_id :id});
-    
-    if (!workout) {
-        return res.status(404).json({ error: "No such workout" });
-    }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: "No such book" });
+  }
 
-    res.status(200).json(books);
-}
+  const books = await Book.findOneAndDelete({ _id: id });
 
+  if (!books) {
+    return res.status(404).json({ error: "No such workout" });
+  }
+
+  res.status(200).json(books);
+};
 
 //update a book
 const updateBook = async (req, res) => {
-    const { id } = req.params
+  const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: "No such book" });
-      }
-    
-    const books = await Book.findOneAndUpdate({_id :id}, {
-        ...req.body
-    });
-    
-    if (!workout) {
-        return res.status(404).json({ error: "No such workout" });
-    }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: "No such book" });
+  }
 
-    res.status(200).json(books);
-}
+  const books = await Book.findOneAndUpdate(
+    { _id: id },
+    { ...req.body }, // Ensure req.body includes `issued` field
+    { new: true } // Return the updated document
+  );
+
+  if (!books) {
+    return res.status(404).json({ error: "No such workout" });
+  }
+
+  res.status(200).json(books);
+};
 
 //no of books
-const noBooks = Book.countDocuments({})
-  .then((count) => {
-    const noBooks = count;
-    console.log(noBooks);
-  })
-  .catch((err) => {
-    console.error("Error counting documents:", err);
-  });
+const noBooks = async (req, res) => {
+  try {
+    const count = await Book.countDocuments({});
+    res.status(200).json({ count });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get the number of books" });
+  }
+};
 
 module.exports = {
   getBooks,
@@ -89,5 +90,5 @@ module.exports = {
   addBook,
   noBooks,
   deleteBook,
-  updateBook
+  updateBook,
 };

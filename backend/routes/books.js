@@ -20,13 +20,12 @@ router.get('/:id', getBook)
 router.post('/', addBook)
 
 //update a book
-router.patch('/:id', (req,res) => {
-    res.json({mssg: "update a single book"})
-})
+router.patch('/:id', updateBook)
 
 //delete a book
-router.delete('/:id', (req,res) => {
-    res.json({mssg: "delete a single book"})
-})
+router.delete('/:id', deleteBook)
+
+//no of books
+router.get('/', noBooks)
 
 module.exports = router
