@@ -56,22 +56,26 @@ const deleteBook = async (req, res) => {
 //update a book
 const updateBook = async (req, res) => {
   const { id } = req.params;
+  const { issued, issuedOn, returnDate, issuedTo } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: "No such book" });
   }
 
-  const books = await Book.findOneAndUpdate(
-    { _id: id },
-    { ...req.body }, // Ensure req.body includes `issued` field
-    { new: true } // Return the updated document
-  );
+  const book = await Book.findById(id);
 
-  if (!books) {
-    return res.status(404).json({ error: "No such workout" });
+  if (!book) {
+    return res.status(404).json({ error: "No such book" });
   }
 
-  res.status(200).json(books);
+  // Update the issued status, dates, and issuedTo
+  const updatedBook = await Book.findOneAndUpdate(
+    { _id: id },
+    { issued, issuedOn, returnDate, issuedTo },
+    { new: true }
+  );
+
+  res.status(200).json(updatedBook);
 };
 
 //no of books

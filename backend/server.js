@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const bookRoutes = require("./routes/books");
+const countRoutes = require("./routes/count");
+const userRoutes = require("./routes/users");
 
 //express app
 const app = express();
@@ -16,6 +18,8 @@ app.use((req, res, next) => {
 
 //routes
 app.use("/api/books", bookRoutes);
+app.use("", countRoutes)
+app.use("/api/users", userRoutes)
 
 
 mongoose
